@@ -6,8 +6,8 @@ A full-stack Task Management System that allows teams to manage projects, assign
 
 ## 🌐 Live Demo
 
-🔗 Live App: https://your-live-link
-🎥 Demo Video: https://your-video-link
+🔗 Live App: taskmanager-production-e660.up.railway.app
+🎥 Demo Video: [https://your-video-link](https://drive.google.com/file/d/1PkzVIHY9NXZ8DbYMowCaWGlGZr-A6uvr/view?usp=sharing)
 
 ---
 
