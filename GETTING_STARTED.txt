@@ -1,0 +1,262 @@
+================================================================================
+                    TASK MANAGER - GETTING STARTED
+================================================================================
+
+DEMO CREDENTIALS
+================================================================================
+
+Scrum Master (Admin Account):
+  Email:    admin@taskmanager.com
+  Password: admin123
+  Permissions: Full access - create/edit/delete tasks and projects
+
+Developer (Member Account):
+  Email:    dev@taskmanager.com
+  Password: dev123
+  Permissions: Limited - edit assigned tasks and log hours only
+
+
+LOCAL SETUP (5 minutes)
+================================================================================
+
+1. START MYSQL (Choose one option)
+
+   Option A - With Docker (Recommended):
+   $ docker run --name task_manager_db \
+       -e MYSQL_ROOT_PASSWORD=password \
+       -e MYSQL_DATABASE=task_manager \
+       -p 3306:3306 \
+       -d mysql:8.0
+
+   Option B - Local MySQL:
+   $ mysql -u root -p
+   > CREATE DATABASE task_manager;
+
+2. INSTALL DEPENDENCIES
+   $ pnpm install
+
+3. SETUP DATABASE
+   $ pnpm db:push
+   $ pnpm db:setup
+
+4. START DEVELOPMENT SERVER
+   $ pnpm dev
+
+5. OPEN IN BROWSER
+   http://localhost:3000
+
+6. LOGIN WITH DEMO CREDENTIALS ABOVE
+
+
+DEPLOYMENT TO RAILWAY (10 minutes)
+================================================================================
+
+1. PUSH CODE TO GITHUB
+   $ git add .
+   $ git commit -m "Task Manager Application"
+   $ git push origin main
+
+2. GO TO RAILWAY
+   Visit: https://railway.app
+   Sign up with GitHub
+
+3. CREATE NEW PROJECT
+   - Click "Create New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
+   - Select "main" branch
+
+4. ADD MYSQL SERVICE
+   - Click "+ Add Service"
+   - Select "MySQL"
+   - Railway creates database automatically
+
+5. SET ENVIRONMENT VARIABLES
+   In Railway Variables tab, add:
+   
+   JWT_SECRET = (run: openssl rand -hex 32)
+   NODE_ENV = production
+   NEXT_PUBLIC_API_URL = your-project.railway.app
+
+6. DEPLOY
+   - Push code to GitHub or click "Deploy" in Railway
+   - Wait 3-5 minutes for build
+
+7. VERIFY
+   - Click your Railway project URL
+   - Login with demo credentials
+   - Test creating tasks and logging hours
+
+Your app is now LIVE! 🚀
+
+
+PROJECT STRUCTURE
+================================================================================
+
+app/
+  ├── api/
+  │   ├── auth/          Login, signup, logout endpoints
+  │   ├── tasks/         Task CRUD operations with RBAC
+  │   ├── task-logs/     Hour tracking
+  │   ├── projects/      Project management
+  │   └── users/         User listing
+  ├── login/             Login page
+  ├── signup/            Registration page
+  ├── dashboard/         Main task management interface
+  └── globals.css        Theme colors and styling
+
+components/
+  └── dashboard/         Reusable dashboard components
+      ├── TaskCard.tsx
+      ├── TaskList.tsx
+      ├── CreateTaskDialog.tsx
+      ├── EditTaskDialog.tsx
+      └── LogHoursDialog.tsx
+
+lib/
+  ├── prisma.ts          Database client
+  └── auth.ts            JWT utilities
+
+prisma/
+  └── schema.prisma      Database schema
+
+
+KEY FEATURES
+================================================================================
+
+✓ Role-Based Access Control (Admin/Member)
+✓ Secure JWT Authentication with bcrypt
+✓ Project & Team Management
+✓ Task Creation, Assignment & Tracking
+✓ Task Status Management (Pending/In Progress/Completed)
+✓ Hours Logging & Tracking
+✓ Corporate Dark Theme UI
+✓ Responsive Design
+✓ Production-Ready Code
+
+
+DATABASE SCHEMA
+================================================================================
+
+Users
+  - id, email, password (hashed), name, role (ADMIN/MEMBER)
+
+Projects
+  - id, name, description, createdBy, createdAt
+
+ProjectMembers
+  - projectId, userId, role (ADMIN/MEMBER), joinedAt
+
+Tasks
+  - id, projectId, title, description, assignedTo
+  - status (UNASSIGNED/PENDING/IN_PROGRESS/COMPLETED)
+  - priority (LOW/MEDIUM/HIGH), estimatedHours, actualHours
+  - createdAt, updatedAt, completedAt
+
+TaskLogs
+  - id, taskId, userId, hoursLogged, date, notes
+
+
+ENVIRONMENT VARIABLES
+================================================================================
+
+Required for local development (.env.local):
+
+DATABASE_URL="mysql://root:password@localhost:3306/task_manager"
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+NODE_ENV="development"
+NEXT_PUBLIC_API_URL="http://localhost:3000"
+
+For Railway (set in Dashboard Variables):
+
+DATABASE_URL=                    (auto-filled from MySQL)
+JWT_SECRET=                      (generate new random key)
+NODE_ENV="production"
+NEXT_PUBLIC_API_URL="your-domain.railway.app"
+
+
+USEFUL COMMANDS
+================================================================================
+
+Development:
+  pnpm dev              Start development server
+  pnpm build            Build for production
+  pnpm start            Start production server
+
+Database:
+  pnpm db:push          Sync schema to database
+  pnpm db:setup         Populate sample data
+  pnpm prisma:migrate   Create new migration
+  pnpm prisma:generate  Generate Prisma client
+
+Linting:
+  pnpm lint             Check for errors
+
+
+TESTING THE APPLICATION
+================================================================================
+
+As Admin (admin@taskmanager.com / admin123):
+  1. Create a new project
+  2. Add team members
+  3. Create tasks with priorities
+  4. Assign tasks to team members
+  5. Edit and delete tasks
+  6. View all team activity
+
+As Developer (dev@taskmanager.com / dev123):
+  1. See assigned tasks in dashboard
+  2. Update task status (Pending → In Progress → Completed)
+  3. Log hours worked on tasks
+  4. Cannot create, edit, or delete tasks
+
+
+TROUBLESHOOTING
+================================================================================
+
+Can't connect to database?
+  - Verify MySQL is running
+  - Check DATABASE_URL in .env.local
+  - Run: pnpm db:push
+
+Login not working?
+  - Clear browser cookies
+  - Hard refresh (Ctrl+Shift+R)
+  - Check JWT_SECRET is set correctly
+
+Tasks not showing?
+  - Ensure logged in as admin to see all
+  - Members only see assigned tasks
+  - Verify sample data: pnpm db:setup
+
+Build/deployment fails?
+  - Check Railway build logs
+  - Verify .env.local not committed
+  - Ensure all env vars set in Railway
+
+
+DOCUMENTATION FILES
+================================================================================
+
+SETUP_GUIDE.md         Complete local setup with troubleshooting
+DEPLOYMENT.md          Railway deployment guide with examples
+QUICKSTART.md          5-minute quick start
+README.md              Full project documentation
+GETTING_STARTED.txt    This file
+
+
+NEXT STEPS
+================================================================================
+
+1. Follow local setup above
+2. Test with demo credentials
+3. Deploy to Railway (follow DEPLOYMENT.md)
+4. Invite team members
+5. Start managing tasks!
+
+For detailed help, see the documentation files listed above.
+
+================================================================================
+Built with Next.js 16, React 19, MySQL, Prisma & TypeScript
+Ready for production deployment
+================================================================================

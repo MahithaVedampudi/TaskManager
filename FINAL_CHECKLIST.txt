@@ -1,0 +1,385 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    TASK MANAGER - FINAL SETUP CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+
+BEFORE YOU START
+═════════════════════════════════════════════════════════════════════════════
+
+You should have:
+  ☐ Node.js v18+ (check: node --version)
+  ☐ pnpm installed (check: pnpm --version)
+  ☐ MySQL installed OR Docker installed
+  ☐ Text editor (VS Code, Cursor, etc)
+  ☐ GitHub account (for deployment)
+  ☐ Railway account (optional, for deployment)
+
+
+STEP 1: SETUP DATABASE (10 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+Choose Option A or B:
+
+OPTION A - DOCKER (Recommended, Easiest):
+  ☐ Docker installed (download from https://www.docker.com/)
+  ☐ Run this command:
+    
+    docker run --name task_manager_db \
+      -e MYSQL_ROOT_PASSWORD=password \
+      -e MYSQL_DATABASE=task_manager \
+      -p 3306:3306 -d mysql:8.0
+    
+  ☐ Verify it's running: docker ps | grep task_manager
+
+OPTION B - LOCAL MYSQL:
+  ☐ MySQL installed and running
+  ☐ Create database:
+    
+    mysql -u root -p
+    > CREATE DATABASE task_manager;
+    > EXIT;
+  
+  ☐ Verify: mysql -u root -p -e "SHOW DATABASES;"
+
+
+STEP 2: VERIFY PROJECT FILES (5 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+In your project directory, verify these files exist:
+  ☐ .env.local
+  ☐ package.json
+  ☐ prisma/schema.prisma
+  ☐ app/login/page.tsx
+  ☐ app/dashboard/page.tsx
+  ☐ app/api/auth/login/route.ts
+
+
+STEP 3: UPDATE .env.local (2 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+Edit the .env.local file and verify/update these values:
+
+  DATABASE_URL="mysql://root:password@localhost:3306/task_manager"
+  JWT_SECRET="your-secret-key-here-change-for-production"
+  NODE_ENV="development"
+  NEXT_PUBLIC_API_URL="http://localhost:3000"
+
+Notes:
+  • Replace "password" with your MySQL password if different
+  • Keep JWT_SECRET for now, change it for production
+  • Don't share .env.local or commit it to Git
+
+
+STEP 4: INSTALL DEPENDENCIES (3-5 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+Open terminal in project directory and run:
+
+  ☐ pnpm install
+
+Wait for completion. You should see:
+  • "added XXX packages" message
+  • No error messages
+
+
+STEP 5: SETUP DATABASE SCHEMA (2 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+Run these two commands:
+
+  ☐ pnpm prisma:generate
+
+Wait for:
+  • "✔ Generated Prisma Client"
+
+  ☐ pnpm db:push
+
+Wait for:
+  • "Successfully created X tables"
+
+
+STEP 6: CREATE SAMPLE DATA (1 minute)
+═════════════════════════════════════════════════════════════════════════════
+
+  ☐ pnpm db:setup
+
+You should see:
+  • "Sample data created successfully"
+  • Admin account: admin@taskmanager.com / admin123
+  • Dev account: dev@taskmanager.com / dev123
+
+
+STEP 7: START DEVELOPMENT SERVER (2 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+  ☐ pnpm dev
+
+You should see:
+  • "started server on 0.0.0.0:3000"
+  • "Ready in XXXms"
+  • No error messages
+
+
+STEP 8: TEST IN BROWSER (5 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+  ☐ Open: http://localhost:3000
+  ☐ You're redirected to: http://localhost:3000/login
+
+TEST ADMIN LOGIN:
+  ☐ Email: admin@taskmanager.com
+  ☐ Password: admin123
+  ☐ Click "Login"
+  ☐ Dashboard loads successfully
+  ☐ Can see "Create Project" button
+  ☐ Can see "Create Task" button
+
+TEST ADMIN FEATURES:
+  ☐ Click "Create Project"
+  ☐ Enter project name: "Test Project"
+  ☐ Click "Create"
+  ☐ Project appears in project selector
+  ☐ Click "Create Task"
+  ☐ Enter task details
+  ☐ Assign to "dev" account
+  ☐ Click "Create Task"
+  ☐ Task appears in task list
+
+LOGOUT AND TEST DEVELOPER:
+  ☐ Click user menu (top right)
+  ☐ Click "Logout"
+  ☐ Logged out, back to login page
+  ☐ Email: dev@taskmanager.com
+  ☐ Password: dev123
+  ☐ Click "Login"
+  ☐ Dashboard loads
+  ☐ Can see assigned task
+  ☐ Click on task
+  ☐ Can change status
+  ☐ Can log hours
+  ☐ Cannot see "Create Task" button
+  ☐ Cannot edit task title
+
+
+STEP 9: VERIFY KEY FEATURES (5 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+As Admin:
+  ☐ Can create projects
+  ☐ Can create tasks
+  ☐ Can assign tasks
+  ☐ Can see all tasks
+  ☐ Can edit any task
+  ☐ Can delete tasks
+  ☐ Can see hours logged
+
+As Developer:
+  ☐ Can see assigned tasks only
+  ☐ Can change task status
+  ☐ Can log hours
+  ☐ Cannot create tasks
+  ☐ Cannot delete tasks
+  ☐ Cannot assign tasks
+
+
+STEP 10: PREPARE FOR DEPLOYMENT (Optional, 5 minutes)
+═════════════════════════════════════════════════════════════════════════════
+
+SETUP GIT:
+  ☐ git init (if not already a repo)
+  ☐ git add .
+  ☐ git commit -m "Task Manager Initial"
+
+CREATE GITHUB REPOSITORY:
+  ☐ Go to https://github.com/new
+  ☐ Create new repository "task-manager"
+  ☐ Copy the URL
+
+PUSH TO GITHUB:
+  ☐ git remote add origin <your-repo-url>
+  ☐ git push -u origin main
+
+VERIFY ON GITHUB:
+  ☐ Go to your GitHub repo
+  ☐ See all code uploaded
+  ☐ See .env.local is NOT visible (should be in .gitignore)
+
+
+STEP 11: DEPLOY TO RAILWAY (10 minutes, Optional)
+═════════════════════════════════════════════════════════════════════════════
+
+RAILWAY ACCOUNT:
+  ☐ Go to https://railway.app
+  ☐ Sign up with GitHub
+  ☐ Connect GitHub account
+
+CREATE PROJECT:
+  ☐ Click "Create New Project"
+  ☐ Select "Deploy from GitHub repo"
+  ☐ Select your "task-manager" repository
+  ☐ Give project a name
+  ☐ Click "Deploy"
+
+ADD MYSQL SERVICE:
+  ☐ Railway auto-detects database needs
+  ☐ If not, click "Add" button
+  ☐ Select "Database"
+  ☐ Choose "MySQL"
+  ☐ Railway creates MySQL instance
+
+SET ENVIRONMENT VARIABLES:
+  ☐ Click on Node.js service
+  ☐ Go to "Variables" tab
+  ☐ Check DATABASE_URL exists (Railway adds it)
+  ☐ Add:
+      NODE_ENV=production
+      NEXT_PUBLIC_API_URL=https://your-railway-app.railway.app
+      JWT_SECRET=<new-random-secret>
+  
+  To generate JWT_SECRET:
+    openssl rand -hex 32
+
+WATCH DEPLOYMENT:
+  ☐ Go to "Build" tab
+  ☐ Watch build logs
+  ☐ Wait for "Deployment successful" message
+  ☐ Takes 2-3 minutes
+
+FIND YOUR LIVE URL:
+  ☐ Click on Node.js service
+  ☐ Look for "Domains" section
+  ☐ Copy your domain (example: task-manager-prod.railway.app)
+
+TEST LIVE APP:
+  ☐ Open your live URL in browser
+  ☐ Should see login page
+  ☐ Login with admin credentials
+  ☐ Verify app works
+  ☐ Can create projects and tasks
+  ☐ Share URL with your team
+
+
+STEP 12: TROUBLESHOOTING (If needed)
+═════════════════════════════════════════════════════════════════════════════
+
+Database Connection Error:
+  ☐ Verify MySQL is running: docker ps (for Docker)
+  ☐ Check DATABASE_URL in .env.local
+  ☐ Try: mysql -u root -p task_manager
+
+Login Not Working:
+  ☐ Clear browser cookies (Ctrl+Shift+Delete)
+  ☐ Hard refresh (Ctrl+Shift+R)
+  ☐ Check JWT_SECRET is set
+  ☐ Check browser console (F12 → Console)
+
+Tasks Not Showing:
+  ☐ Login as admin
+  ☐ Run: pnpm db:setup again
+  ☐ Check /api/tasks endpoint in browser
+
+Build/Start Issues:
+  ☐ Delete: node_modules and pnpm-lock.yaml
+  ☐ Run: pnpm install again
+  ☐ Run: pnpm dev
+
+Railway Deployment Issues:
+  ☐ Check Railway dashboard "Build" logs
+  ☐ Verify all environment variables are set
+  ☐ Make sure .env.local is in .gitignore
+  ☐ Check Railway MySQL service status
+
+
+DOCUMENTATION TO READ
+═════════════════════════════════════════════════════════════════════════════
+
+If you need help:
+  1. 00_READ_ME_FIRST.txt          Start here
+  2. QUICK_REFERENCE.txt           Commands cheat sheet
+  3. INSTALLATION_STEPS.md         Detailed guide
+  4. DEPLOYMENT.md                 Railway guide
+  5. FEATURES.md                   Feature docs
+
+
+SUCCESS CHECKLIST
+═════════════════════════════════════════════════════════════════════════════
+
+You're done when you can:
+  ☐ Access http://localhost:3000
+  ☐ Login as admin@taskmanager.com / admin123
+  ☐ See clean corporate dashboard
+  ☐ Create a project
+  ☐ Create a task and assign it
+  ☐ Logout and login as dev@taskmanager.com / dev123
+  ☐ See assigned task as developer
+  ☐ Change task status as developer
+  ☐ Log hours as developer
+  ☐ (Optional) Live app on Railway.app
+
+
+NEXT STEPS
+═════════════════════════════════════════════════════════════════════════════
+
+1. Complete all steps above
+
+2. Customize (optional):
+   • Change theme colors (app/globals.css)
+   • Add company logo (public/)
+   • Update title (app/layout.tsx)
+
+3. Invite team:
+   • Share live URL (if deployed)
+   • Share login credentials
+   • Show them how to:
+     - View assigned tasks
+     - Update task status
+     - Log hours
+
+4. Configure users:
+   • Create accounts for team members
+   • Assign roles (admin or member)
+   • Add them to projects
+
+
+COMMON ISSUES & SOLUTIONS
+═════════════════════════════════════════════════════════════════════════════
+
+"pnpm: command not found"
+  → npm install -g pnpm
+
+"Can't connect ECONNREFUSED"
+  → MySQL not running, check docker ps
+
+"Module not found"
+  → pnpm install again
+
+"Prisma error"
+  → pnpm prisma:generate && pnpm db:push
+
+"JWT errors"
+  → Verify JWT_SECRET in .env.local
+
+"404 on /api/tasks"
+  → Ensure authenticated with valid JWT token
+
+
+SECURITY REMINDERS
+═════════════════════════════════════════════════════════════════════════════
+
+  ☐ Never commit .env.local to Git
+  ☐ Generate new JWT_SECRET for production
+  ☐ Use strong MySQL password in production
+  ☐ Enable HTTPS (Railway does this automatically)
+  ☐ Keep dependencies updated
+  ☐ Don't share credentials publicly
+  ☐ Review code before production
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    🎉 YOU'RE ALL SET!
+
+              Follow these steps in order and you'll be good to go.
+             Questions? Check the documentation files listed above.
+
+═══════════════════════════════════════════════════════════════════════════════

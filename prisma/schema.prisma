@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String
+  role      String    @default("MEMBER") // ADMIN or MEMBER
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  assignedTasks  Task[]        @relation("assignedTasks")
+  projectMembers ProjectMember[]
+  taskLogs       TaskLog[]
+
+  @@map("users")
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  members ProjectMember[]
+  tasks   Task[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  projectId Int
+  role      String  @default("MEMBER") // ADMIN or MEMBER in project
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("project_members")
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?   @db.Text
+  status      String    @default("UNASSIGNED") // UNASSIGNED, PENDING, IN_PROGRESS, COMPLETED
+  priority    String    @default("MEDIUM") // LOW, MEDIUM, HIGH
+  projectId   Int
+  assignedTo  Int?
+  estimatedHours Float   @default(0)
+  actualHours Float     @default(0)
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?       @relation("assignedTasks", fields: [assignedTo], references: [id], onDelete: SetNull)
+  taskLogs    TaskLog[]
+
+  @@map("tasks")
+}
+
+model TaskLog {
+  id        Int       @id @default(autoincrement())
+  taskId    Int
+  userId    Int
+  hoursWorked Float
+  notes     String?   @db.Text
+  createdAt DateTime  @default(now())
+
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("task_logs")
+}

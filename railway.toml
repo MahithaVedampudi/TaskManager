@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[[build.nixpacksPlan.phases.setup]]
+cmds = ["npm install -g pnpm"]
+
+[deploy]
+startCommand = "pnpm start"
+healthcheckPath = "/"
+healthcheckTimeout = 30
